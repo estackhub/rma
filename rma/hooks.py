@@ -89,13 +89,19 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	# "*": {
+	# 	"on_update": "method",
+	# 	"on_cancel": "method",
+	# 	"on_trash": "method"
+	# },
+	#before_update_after_submit
+	#after_insert
+	
+	"Sales Invoice": {
+		"after_insert": "rma.rma.api.returnable.update_invoice"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -172,4 +178,22 @@ user_data_fields = [
 # auth_hooks = [
 # 	"rma.auth.validate"
 # ]
+
+
+fixtures = [{
+	"doctype": "Custom Field",
+	"filters": [
+            [
+                "name",
+                "in",
+                (
+                    "Sales Invoice-entry_type",
+                    "Sales Invoice Item-poi_ec",
+                    "Item-has_rec",
+					"Item-is_rec",
+                    "Item-main_hrec_tag",	
+                ),
+            ]
+        ],
+	}]
 
