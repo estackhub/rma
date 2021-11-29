@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "creation": "2021-11-29 01:01:19.225916",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "apply_setting_section",
+  "auto_rec_posting"
+ ],
+ "fields": [
+  {
+   "fieldname": "apply_setting_section",
+   "fieldtype": "Section Break",
+   "label": "Apply Setting"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_rec_posting",
+   "fieldtype": "Check",
+   "label": "Auto REC Posting"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2021-11-29 05:00:07.975271",
+ "modified_by": "Administrator",
+ "module": "RMA",
+ "name": "Returnable Setting",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

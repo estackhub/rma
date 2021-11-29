@@ -21,6 +21,11 @@ def update_invoice(doc, method):
     Main Entry
     REC Entry
     '''
+    #print(f'\n\n\n\n\n\n\n\ngot here for main sales \n\n\n\n\n\n\n\n')
+    if not frappe.db.get_single_value('Returnable Setting', 'auto_rec_posting'):
+        return
+    
+
     if(doc.entry_type == "REC Entry" ):
         # it is auto invoice by our rma
         # therefore trap it
@@ -31,7 +36,7 @@ def update_invoice(doc, method):
             #print(f'got here for returns \n\n\n')
             #check if paid : life-time or subscription 
             # if freemium return
-            print(f'\n Only paid subscription \n')
+            pass
             #rma_return_submit_invoice(doc)
         else:
             #print(f'got here for main sales \n\n')
@@ -105,7 +110,7 @@ def rma_main_submit_invoice (data):
                     "poi_ec":vch_item.poi_ec,
                 })
     ###remove paid EC
-    print(f'get first count or leght {len(item_ec_list)} \n\n\n')
+    #print(f'get first count or leght {len(item_ec_list)} \n\n\n')
     if (len(ec_remover_list) <= 0):
         return
 
@@ -118,7 +123,7 @@ def rma_main_submit_invoice (data):
     ## get Totals (qty and amount)
     nqty = 0
     nsum = 0
-    print(f'get the length or count {len(ec_remover_list)} \n\n\n ')
+    #print(f'get the length or count {len(ec_remover_list)} \n\n\n ')
     for cal in ec_remover_list:
         nqty += cal['qty']
         nsum += cal['amount']
@@ -179,7 +184,7 @@ def rma_return_submit_invoice (data):
         as_dict=1,
     )
 
-    print(f'am inside: {len(items_data)} ')
+    #print(f'am inside: {len(items_data)} ')
     if (len(items_data) <= 0):
         return
 
@@ -217,7 +222,7 @@ def rma_return_submit_invoice (data):
     ## get Totals (qty and amount)
     nqty = 0
     nsum = 0
-    print(f'filted out: {len(ec_remover_list)} ')
+    #print(f'filted out: {len(ec_remover_list)} ')
     if (len(ec_remover_list) <= 0):
         return
 
