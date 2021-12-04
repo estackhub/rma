@@ -56,7 +56,7 @@ app_license = "MIT"
 # Installation
 # ------------
 
-# before_install = "rma.install.before_install"
+before_install = "rma.events.install.before_install"
 # after_install = "rma.install.after_install"
 
 # Desk Notifications
@@ -99,7 +99,7 @@ doc_events = {
 	#after_insert
 	
 	"Sales Invoice": {
-		"after_insert": "rma.rma.api.returnable.update_invoice"
+		"on_submit": "rma.rma.api.returnable.update_invoice"
 	}
 }
 

@@ -5,6 +5,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "app_control_display",
+  "cuid",
+  "column_break_3",
+  "rma_status",
   "apply_setting_section",
   "auto_rec_posting"
  ],
@@ -19,11 +23,30 @@
    "fieldname": "auto_rec_posting",
    "fieldtype": "Check",
    "label": "Auto REC Posting"
+  },
+  {
+   "fieldname": "cuid",
+   "fieldtype": "Read Only",
+   "label": "System ID"
+  },
+  {
+   "fieldname": "rma_status",
+   "fieldtype": "Read Only",
+   "label": "App Status"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_control_display",
+   "fieldtype": "Section Break",
+   "label": "Display Panel"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2021-11-29 05:00:07.975271",
+ "modified": "2021-12-04 01:44:45.122329",
  "modified_by": "Administrator",
  "module": "RMA",
  "name": "Returnable Setting",

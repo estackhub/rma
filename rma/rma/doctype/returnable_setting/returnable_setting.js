@@ -2,7 +2,11 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Returnable Setting', {
-	// refresh: function(frm) {
-
-	// }
+	
+	onload_post_render: function (frm){
+		frm.disable_save();
+		frm.call('get_info').then( r => {
+			frm.refresh();
+		})
+	}
 });

@@ -11,6 +11,8 @@ from frappe.utils.data import add_days, today
 
 GLOBAL_MAIN_SERIES = 'RMM-VCH-.YYYY.-'
 GLOBAL_RETURN_SERIES = 'RMM-RET-.YYYY.-'
+GLOBAL_MAIN_ENTRY = 'MAIN Entry'
+GLOBAL_RETURN_ENTRY = 'REC Entry'
 
 ### make rma EC Due Date cannot be before Posting / Supplier Invoice Date
 @frappe.whitelist()
@@ -26,7 +28,7 @@ def update_invoice(doc, method):
         return
     
 
-    if(doc.entry_type == "REC Entry" ):
+    if(doc.entry_type == GLOBAL_RETURN_ENTRY ):
         # it is auto invoice by our rma
         # therefore trap it
         return
@@ -34,10 +36,14 @@ def update_invoice(doc, method):
         ###RMA
         if(doc.is_return):
             #print(f'got here for returns \n\n\n')
-            #check if paid : life-time or subscription 
             # if freemium return
-            pass
-            #rma_return_submit_invoice(doc)
+            if validate_limit == 'FREEMIUM_PACK' :
+                pass
+            elif validate_limit == 'PREMIUM_PACK' :
+                rma_return_submit_invoice(doc)
+            else:
+                pass
+            
         else:
             #print(f'got here for main sales \n\n')
             # freemium pass
@@ -132,7 +138,7 @@ def rma_main_submit_invoice (data):
     invoice_doc.update({
         "is_pos": 0, "doc.ignore_pricing_rule" : 1, "total" : nsum, "total_qty": nqty,
         "company": data.company, "currency": data.currency ,
-        "customer":data.customer, "naming_series" :  "RMM-VCH-.YYYY.-", 
+        "customer":data.customer, "naming_series" : GLOBAL_MAIN_SERIES, 
         "set_posting_time":1, "due_date": add_days(data.posting_date, 1), "posting_date": data.posting_date,
         "update_stock":1, "set_warehouse": data.set_warehouse, "set_target_warehouse": data.set_target_warehouse,
         "items": ec_remover_list,
@@ -142,7 +148,7 @@ def rma_main_submit_invoice (data):
     invoice_doc.flags.ignore_permissions = True
     frappe.flags.ignore_account_permission = True
     invoice_doc.ignore_pricing_rule = 1
-    invoice_doc.entry_type = "REC Entry"
+    invoice_doc.entry_type = GLOBAL_RETURN_ENTRY
     invoice_doc.set_missing_values()
 
     invoice_doc.save()
@@ -234,7 +240,7 @@ def rma_return_submit_invoice (data):
     invoice_doc.update({
         "is_pos": 0, "doc.ignore_pricing_rule" : 1, "total" : nsum, "total_qty": nqty,
         "company": data.company, "currency": data.currency ,
-        "customer":data.customer, "naming_series" : "RMM-RET-.YYYY.-", 
+        "customer":data.customer, "naming_series" : 'RMM-RET-.YYYY.-', 
         "set_posting_time":1, "posting_date": data.posting_date,
         "is_return":1, "update_stock":1, "set_warehouse": data.set_warehouse, 
         "set_target_warehouse": data.set_target_warehouse, "items": ec_remover_list,
@@ -248,4 +254,20 @@ def rma_return_submit_invoice (data):
 
     invoice_doc.save()
     invoice_doc.submit()
+
+def validate_limit ():
+  """ work on to get limit """
+  with open(frappe.get_site_path('rmapp.json')) as jsonfile:
+      parsed = json.load(jsonfile)
+  valid_period = parsed["rec_valid_till"]
+  module_status = parsed["rma_status"]
+  diff = date_diff(valid_period, today())
+  #dued = date_diff(module_status, today())
+  if not module_status == 'freemium' and diff > 0 :
+      return 'PREMIUM_PACK'
+
+  elif not module_status == 'freemium' and diff < 0 :
+      return 'FREEMIUM_PACK'
+  else:
+    return 'FREEMIUM_PACK'
 
