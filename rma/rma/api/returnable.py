@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe
 import json
 from frappe import _
-from frappe.utils.data import add_days, today
+from frappe.utils.data import add_days, date_diff, today
     
 
 GLOBAL_MAIN_SERIES = 'RMM-VCH-.YYYY.-'
@@ -35,13 +35,16 @@ def update_invoice(doc, method):
     else:
         ###RMA
         if(doc.is_return):
-            #print(f'got here for returns \n\n\n')
+            print(f'got here for returns {validate_limit} \n\n\n')
             # if freemium return
-            if validate_limit == 'FREEMIUM_PACK' :
+            if validate_limit() == 'FREEMIUM_PACK' :
+                print(f'\n\n\n\n first check \n\n\n')
                 pass
-            elif validate_limit == 'PREMIUM_PACK' :
+            elif validate_limit() == 'PREMIUM_PACK' :
+                print(f'\n\n\n\n returns \n\n\n')
                 rma_return_submit_invoice(doc)
             else:
+                print(f'\n\n\n\n else check  \n\n\n')
                 pass
             
         else:
@@ -159,7 +162,7 @@ def rma_main_submit_invoice (data):
   
 def rma_return_submit_invoice (data):
     """begin here"""
-    
+    print(f'\n\n\n\n inside returns \n\n\n')
     voucher_items = ""
     for x in data.items:
         voucher_items +="\'"+ x.item_code+"\',"
@@ -190,7 +193,7 @@ def rma_return_submit_invoice (data):
         as_dict=1,
     )
 
-    #print(f'am inside: {len(items_data)} ')
+    print(f'am inside: {len(items_data)} ')
     if (len(items_data) <= 0):
         return
 
@@ -249,7 +252,7 @@ def rma_return_submit_invoice (data):
     invoice_doc.flags.ignore_permissions = True
     frappe.flags.ignore_account_permission = True
     invoice_doc.ignore_pricing_rule = 1
-    invoice_doc.is_ec_trans = "REC Entry"
+    invoice_doc.entry_type = GLOBAL_RETURN_ENTRY
     invoice_doc.set_missing_values()
 
     invoice_doc.save()
@@ -261,6 +264,8 @@ def validate_limit ():
       parsed = json.load(jsonfile)
   valid_period = parsed["rec_valid_till"]
   module_status = parsed["rma_status"]
+  #"rma_status": "premium",
+  print(f'filted out: {module_status} \n\n\n')
   diff = date_diff(valid_period, today())
   #dued = date_diff(module_status, today())
   if not module_status == 'freemium' and diff > 0 :
