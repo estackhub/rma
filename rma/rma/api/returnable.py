@@ -14,28 +14,22 @@ GLOBAL_RETURN_SERIES = 'RMM-RET-.YYYY.-'
 GLOBAL_MAIN_ENTRY = 'MAIN Entry'
 GLOBAL_RETURN_ENTRY = 'REC Entry'
 
-### make rma EC Due Date cannot be before Posting / Supplier Invoice Date
+
 @frappe.whitelist()
 def update_invoice(doc, method):
     '''
-    invoice_doc.save()
-    return_against: doc
-    Main Entry
-    REC Entry
+    invoice_doc.save() return_against: doc
     '''
-    #print(f'\n\n\n\n\n\n\n\ngot here for main sales \n\n\n\n\n\n\n\n')
     if not frappe.db.get_single_value('Returnable Setting', 'auto_rec_posting'):
         return
     
 
     if(doc.entry_type == GLOBAL_RETURN_ENTRY ):
-        # it is auto invoice by our rma
-        # therefore trap it
+        # it is auto invoice by our rma, therefore trap it
         return
     else:
         ###RMA
-        if(doc.is_return):
-            #print(f'got here for returns \n\n\n')
+        if(doc.is_return):            
             # if freemium return
             if validate_limit == 'FREEMIUM_PACK' :
                 pass
@@ -44,13 +38,11 @@ def update_invoice(doc, method):
             else:
                 pass
             
-        else:
-            #print(f'got here for main sales \n\n')
+        else:            
             # freemium pass
             rma_main_submit_invoice (doc)
 
 #  Direct Sales
-#def rma_main_submit_invoice(data):
 def rma_main_submit_invoice (data):
     """begin here"""
     
@@ -116,7 +108,6 @@ def rma_main_submit_invoice (data):
                     "poi_ec":vch_item.poi_ec,
                 })
     ###remove paid EC
-    #print(f'get first count or leght {len(item_ec_list)} \n\n\n')
     if (len(ec_remover_list) <= 0):
         return
 
@@ -129,7 +120,6 @@ def rma_main_submit_invoice (data):
     ## get Totals (qty and amount)
     nqty = 0
     nsum = 0
-    #print(f'get the length or count {len(ec_remover_list)} \n\n\n ')
     for cal in ec_remover_list:
         nqty += cal['qty']
         nsum += cal['amount']
@@ -154,7 +144,6 @@ def rma_main_submit_invoice (data):
     invoice_doc.save()
     invoice_doc.submit()
     #return invoice_doc
-    ##print(f'\n\n\n\nMain Entry: \n {doc.total},{doc.posting_date}\n {doc.due_date}, {doc.name} \n\n')
 
   
 def rma_return_submit_invoice (data):
@@ -190,7 +179,6 @@ def rma_return_submit_invoice (data):
         as_dict=1,
     )
 
-    #print(f'am inside: {len(items_data)} ')
     if (len(items_data) <= 0):
         return
 
@@ -228,7 +216,6 @@ def rma_return_submit_invoice (data):
     ## get Totals (qty and amount)
     nqty = 0
     nsum = 0
-    #print(f'filted out: {len(ec_remover_list)} ')
     if (len(ec_remover_list) <= 0):
         return
 
@@ -262,7 +249,6 @@ def validate_limit ():
   valid_period = parsed["rec_valid_till"]
   module_status = parsed["rma_status"]
   diff = date_diff(valid_period, today())
-  #dued = date_diff(module_status, today())
   if not module_status == 'freemium' and diff > 0 :
       return 'PREMIUM_PACK'
 
